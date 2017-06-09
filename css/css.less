@@ -1,0 +1,217 @@
+@import "global.less";
+@import "fonts.less";
+body {
+background:transparent;
+/*background:#000;*/
+}
+.svImg{
+	height: 46px;
+    position: relative;
+    width: 270px;
+	cursor:pointer;
+}
+
+.playPoint1,
+.playPoint2,
+.playPoint3,
+.playPoint4,
+.playPoint5,
+.playPoint6,
+.playPoint7,
+.playPoint8,
+.playPoint9,
+.playPoint10,
+.playPoint18{
+    background-size: 100% auto !important;
+    height: 22px;
+    margin-left: 13px;
+    margin-top: 11px;
+    position: absolute;
+    width: 22px;
+    z-index: 2;
+}
+.playPoint1{
+	background:rgba(0, 0, 0, 0) url("../img/cost/1pp.png") no-repeat scroll center top;
+}
+.playPoint2{
+	background:rgba(0, 0, 0, 0) url("../img/cost/2pp.png") no-repeat scroll center top;
+}
+.playPoint3{
+	background:rgba(0, 0, 0, 0) url("../img/cost/3pp.png") no-repeat scroll center top;
+}
+.playPoint4{
+	background:rgba(0, 0, 0, 0) url("../img/cost/4pp.png") no-repeat scroll center top;
+}
+.playPoint5{
+	background:rgba(0, 0, 0, 0) url("../img/cost/5pp.png") no-repeat scroll center top;
+}
+.playPoint6{
+	background:rgba(0, 0, 0, 0) url("../img/cost/6pp.png") no-repeat scroll center top;
+}
+.playPoint7{
+	background:rgba(0, 0, 0, 0) url("../img/cost/7pp.png") no-repeat scroll center top;
+}
+.playPoint8{
+	background:rgba(0, 0, 0, 0) url("../img/cost/8pp.png") no-repeat scroll center top;
+}
+.playPoint9{
+	background:rgba(0, 0, 0, 0) url("../img/cost/9pp.png") no-repeat scroll center top;
+}
+.playPoint10{
+	background:rgba(0, 0, 0, 0) url("../img/cost/10pp.png") no-repeat scroll center top;
+}
+.playPoint18{
+	background:rgba(0, 0, 0, 0) url("../img/cost/18pp.png") no-repeat scroll center top;
+}
+
+.playPoint1.grayText{
+	background:rgba(0, 0, 0, 0) url("../gray/img/cost/1pp.png") no-repeat scroll center top;
+}
+.playPoint2.grayText{
+	background:rgba(0, 0, 0, 0) url("../gray/img/cost/2pp.png") no-repeat scroll center top;
+}
+.playPoint3.grayText{
+	background:rgba(0, 0, 0, 0) url("../gray/img/cost/3pp.png") no-repeat scroll center top;
+}
+.playPoint4.grayText{
+	background:rgba(0, 0, 0, 0) url("../gray/img/cost/4pp.png") no-repeat scroll center top;
+}
+.playPoint5.grayText{
+	background:rgba(0, 0, 0, 0) url("../gray/img/cost/5pp.png") no-repeat scroll center top;
+}
+.playPoint6.grayText{
+	background:rgba(0, 0, 0, 0) url("../gray/img/cost/6pp.png") no-repeat scroll center top;
+}
+.playPoint7.grayText{
+	background:rgba(0, 0, 0, 0) url("../gray/img/cost/7pp.png") no-repeat scroll center top;
+}
+.playPoint8.grayText{
+	background:rgba(0, 0, 0, 0) url("../gray/img/cost/8pp.png") no-repeat scroll center top;
+}
+.playPoint9.grayText{
+	background:rgba(0, 0, 0, 0) url("../gray/img/cost/9pp.png") no-repeat scroll center top;
+}
+.playPoint10.grayText{
+	background:rgba(0, 0, 0, 0) url("../gray/img/cost/10pp.png") no-repeat scroll center top;
+}
+.playPoint18.grayText{
+	background:rgba(0, 0, 0, 0) url("../gray/img/cost/18pp.png") no-repeat scroll center top;
+}
+.cardImg{
+    height: 46px;
+    position: relative;
+    width: 270px;
+    z-index: 1;
+}
+
+.highcharts-button-box,
+.highcharts-credits,
+.highcharts-button-symbol{
+	display:none;
+}
+.highcharts-legend-item.highcharts-pie-series {
+    display: inline-block !important;
+    position: relative !important;
+    width: 100% !important;
+}
+.highcharts-legend{
+	position:relative;
+}
+.cardsName{
+    display: block;
+    height: 17px;
+    margin-left: 54px;
+    margin-top: 14px;
+    overflow: hidden;
+    position: absolute;
+    width: 177px;
+    z-index: 2;
+}
+section#svBody{
+	float:left;
+}
+section#svAdmin{
+	padding:10px;
+	#prebuldDeckList .row:hover,
+	.neutral .row:hover,
+	.classCards .row:hover{
+		background:khaki ;
+		cursor:pointer;
+	}
+	#prebuldDeckList .row:active,
+	.neutral .row:active,
+	.classCards .row:active{
+		background:indianred  ;
+		cursor:pointer;
+	}
+	.neutral .row:hover,
+	.classCards .row:hover{
+		background:indianred;
+		
+	}
+	#prebuldDeckList .row:active>*,
+	.neutral .row:hover>*,
+	.classCards .row:hover>*{
+		color:white;
+	}
+}
+#cardListDisplay {
+	position:absolute;
+	margin-top:0;
+	margin-left:-20px;
+	.cardsAmount{
+		display: block;
+		margin-left: 234px;
+		margin-top: -32px;
+		position: absolute;
+		z-index: 2;
+	}
+}
+#opponentsCardListDisplay{
+	position:absolute;
+	margin-top:0;
+	margin-right:16px;
+	right:0;
+	width:270px;
+	.cardsAmount{
+		display: block;
+				margin-left: 234px;
+		margin-top: -32px;
+
+		position: absolute;
+		z-index: 2;
+	}
+	
+}
+#pieCanvas{
+	height: 300px;
+	overflow: visible;
+	position: absolute;
+	margin-left: 130px;
+	margin-top: 690px;
+	width: 300px;
+}
+.highcharts-container ,
+svg:not(:root){
+	overflow:visible!important;
+	tspan{
+		color:white!important;
+		fill:white!important;
+		text-shadow:1px 1px 1px #000!important;
+		box-shadow:0!important;
+		font-weight:bold!important;
+		stroke-width:0!important;
+		font-size:12px!important;
+		
+	}
+	svg:not(:root) .highcharts-label.highcharts-data-label tspan  {
+	
+		
+	}
+}
+#currentTurn {
+	padding-bottom:10px;
+	p,span{
+		color:black!important;
+	}
+}
