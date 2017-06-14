@@ -2,7 +2,7 @@
 class Rules{
 	public $hor = array('a','b','c','d','e','f','g','h',);
 	public $vert = array(1,2,3,4,5,6,7,8);	
-	public $canBe = array();
+	public $options = array();
 	
 	public function getHor($startPosition){
 		for($i=0;$i<count($this->hor);$i++){
@@ -16,13 +16,21 @@ class Rules{
 	/**************
 	Pawn 
 	**************/
-	public function pawnRules($startPosition,$endPosition,$turn){
+	public function pawnRules($startPosition,$endPosition,$turn,$player){
 		if($startPosition['hor'] == $endPosition['hor']){
-			if($turn == 1 and ($endPosition['vert'] == $startPosition['vert']+1 or $endPosition['vert'] == $startPosition['vert']+2))
-				return true;				
-			else
-				if($endPosition['vert'] == $startPosition['vert']+1)
-					return true;
+			if($player === 0){
+				if($turn == 1 and ($endPosition['vert'] == $startPosition['vert']+1 or $endPosition['vert'] == $startPosition['vert']+2))
+					return true;				
+				else
+					if($endPosition['vert'] == $startPosition['vert']+1)
+						return true;
+				}else{
+					if($turn == 1 and ($endPosition['vert'] == $startPosition['vert']-1 or $endPosition['vert'] == $startPosition['vert']-2))
+						return true;				
+					else
+						if($endPosition['vert'] == $startPosition['vert']-1)
+							return true;
+				}
 		}
 		return false;		
 	}
@@ -30,26 +38,26 @@ class Rules{
 	public function pawnEnemyRules($startPosition,$endPosition){
 		$hor = $this->getHor($startPosition);
 		if($this->hor[$hor] !== 'h'){
-			$canBe['hor'][] = $this->hor[$hor+1];
+			$options['hor'][] = $this->hor[$hor+1];
 		}
 		if($this->hor[$hor] !== 'a'){
-			$canBe['hor'][] = $this->hor[$hor-1];
+			$options['hor'][] = $this->hor[$hor-1];
 		}		
-		$canBe['vert'][] = $startPosition['vert']+1;
-		$canBe['vert'][] = $startPosition['vert']-1;
-		for($i=0;$i<count($canBe['hor']);$i++){
-			for($j=0;$j<count($canBe['vert']);$j++){
-				if($canBe['hor'][$i] == $endPosition['hor'] and $canBe['vert'][$j] == $endPosition['vert'])
+		$options['vert'][] = $startPosition['vert']+1;
+		$options['vert'][] = $startPosition['vert']-1;
+		for($i=0;$i<count($options['hor']);$i++){
+			for($j=0;$j<count($options['vert']);$j++){
+				if($options['hor'][$i] == $endPosition['hor'] and $options['vert'][$j] == $endPosition['vert'])
 					return true;
 			}
 		}
 		return false;
 	}
 
-	public function pawn($startPosition,$endPosition,$enemy,$turn){
+	public function pawn($startPosition,$endPosition,$enemy,$turn,$player){
 		if(is_array($startPosition) and is_array($endPosition)){
 			if($enemy !== true){
-				if($this->pawnRules($startPosition,$endPosition,$turn)){
+				if($this->pawnRules($startPosition,$endPosition,$turn,$player)){
 					return true;
 				}	
 			}else{
@@ -148,23 +156,23 @@ class Rules{
 			return true;
 		$hor = $this->getHor($startPosition);
 		if($this->hor[$hor] !== 'h'){
-			$canBe['hor'][] = $this->hor[$hor+1];
+			$options['hor'][] = $this->hor[$hor+1];
 		}
 		if($this->hor[$hor] !== 'a'){
-			$canBe['hor'][] = $this->hor[$hor-1];
+			$options['hor'][] = $this->hor[$hor-1];
 		}	
 		if($startPosition['vert'] !== 8){
-			$canBe['vert'][] = $startPosition['vert']+1;
+			$options['vert'][] = $startPosition['vert']+1;
 		}
 		if($startPosition['vert'] !== 1){
-			$canBe['vert'][] = $startPosition['vert']-1;
+			$options['vert'][] = $startPosition['vert']-1;
 		}	
-		$canBe['vert'][] = (int)$startPosition['vert'];
-		$canBe['hor'][] = $startPosition['hor'];
-		for($i=0;$i<count($canBe['hor']);$i++){
-			if($endPosition['vert'] == $startPosition['vert'] and $endPosition['hor'] == $canBe['hor'][$i])
+		$options['vert'][] = (int)$startPosition['vert'];
+		$options['hor'][] = $startPosition['hor'];
+		for($i=0;$i<count($options['hor']);$i++){
+			if($endPosition['vert'] == $startPosition['vert'] and $endPosition['hor'] == $options['hor'][$i])
 				return true;
-			if($endPosition['hor'] == $startPosition['hor'] and (int)$endPosition['vert'] == (int)$canBe['vert'][$i])
+			if($endPosition['hor'] == $startPosition['hor'] and (int)$endPosition['vert'] == (int)$options['vert'][$i])
 				return true;
 		}
 		return false;
