@@ -10,7 +10,6 @@ if($gameId = $gameDB->selectLastGame()){
 }
 unset($data['game_info']['id']);
 $i=0;
-
 echo '<div  id="chessBoard">';
 foreach($data['game_info'] as $field => $piece){
 	$boardRow = Functions::getProp($field,1,false);

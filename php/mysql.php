@@ -1,9 +1,11 @@
 ﻿<?php
 class GameDB {
+	/****DB Settings****/
 	private $bd = "chess";
 	private $host = "localhost";
 	private $user = "root";
 	private $password = "";
+	/****DB Settings****/
 	private $charset = "utf8";
 	public $gameInfoTable = "game_info";
 	private $gameLogTable = "game_log";
@@ -21,6 +23,7 @@ class GameDB {
 	}
 	
 	public function sendQuery($data,$returnId=false){
+		//echo $data;
 		if(!$result['data'] = $this->mysqli->query($data))
 			return false;
 		if($returnId)
@@ -84,13 +87,18 @@ class GameDB {
 		return $data;
 	}
 	
-	public function updateBoard($startPosition,$endPosition,$piece,$color,$gameLogId){
+	public function updateBoard($startPosition,$endPosition,$piece,$color,$gameLogId,$turn,$player){
 		$piecesList = $this->getPiecesList();
 		foreach($piecesList as $key => $value){
 			if($value == $piece)
 				$piece = $key;
 		}
 		$this->sendQuery("UPDATE `".$this->gameInfoTable."` SET `".$startPosition."` = NULL, `".$endPosition."` = '".$piece.$color."' WHERE `".$this->gameInfoTable."`.`id` = ".$gameLogId);
+		if($player == 1)
+			$player = 0;
+		else
+			$player = 1;
+		$this->sendQuery("UPDATE `".$this->gameLogTable."` SET `turn` = '".$turn."', `player` = '".$player."' WHERE `".$this->gameLogTable."`.`id` = ".$gameLogId);
 	}
 	
 	public function clearData(){

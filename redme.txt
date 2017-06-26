@@ -1,0 +1,5 @@
+DB settings - php/mysql.php 
+
+Настройки базы данных - php/mysql.php
+
+(bd,name,password,user) 

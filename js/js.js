@@ -9,10 +9,9 @@ function submitFile(formUrl,formDatalink,responseText,respondNodeId,staticBoardE
                 cache: false,
                 processData: false,
                 success: function(data, textSatus, jqXHR){
-                        //now get here response returned by PHP in JSON fomat you can parse it using JSON.parse(data)
 						if(responseText === true && respondNodeId){
 							document.getElementById(respondNodeId).innerHTML = getted.responseText;
-							player = Number(jQuery('#chessBoardWrap').find('#player').val());// current player 0/1
+							player = Number(jQuery('#chessBoardWrap').find('#player').val());
 							var turn = jQuery('#chessBoardWrap').find("#turn").val();
 							jQuery('#current-player').text(getColor(player,false));
 							jQuery('#current-turn').text(turn);
@@ -24,7 +23,7 @@ function submitFile(formUrl,formDatalink,responseText,respondNodeId,staticBoardE
 						}	
                 },
                 error: function(jqXHR, textStatus, errorThrown){
-                        //handle here error returned
+					
                 }
         });
 }
@@ -65,7 +64,7 @@ function movePiece(staticBoardElement){
 	startPostitionElementLink.children().fadeOut(500,function(){
 		cacheDataPiece = startPostitionElementLink.data('piece');
 		cacheDataColor = startPostitionElementLink.data('color');
-		endPostitionElementLink.attr('data-color',cacheDataColor);/*css/html dont see updated data*/
+		endPostitionElementLink.attr('data-color',cacheDataColor);
 		endPostitionElementLink.data('color',cacheDataColor);
 		endPostitionElementLink.data('piece',cacheDataPiece);
 		
@@ -82,7 +81,7 @@ function movePiece(staticBoardElement){
 	});
 
 }
-/*check dom if active class exist on board*/
+
 function issetActiveElement(findElement){
 	var activeElement = jQuery('#chessBoardWrap').find(findElement)[0];
 	if(typeof activeElement == "undefined"){
@@ -93,12 +92,12 @@ function issetActiveElement(findElement){
 }
 
 function setStartPosition(curentPieceClick,player,staticBoardElement){
-	var startPosition = curentPieceClick.data('field');//start position of current piece a-h/1/8
-	var userGIField = jQuery('#selected-field');//user GUI field it show start position for piece a-h/1-8
-	//var selectedPiece = jQuery('#selectedPiece');//user GUI field it show start position for piece a-h/1-8
+	var startPosition = curentPieceClick.data('field');
+	var userGIField = jQuery('#selected-field');
 	var color = getColor(curentPieceClick.data('color'));
-	var piece = curentPieceClick.data('piece');//current type of piece pawn-king	
-	var firstAction = curentPieceClick.data('action');//current type of piece pawn-king		
+	var piece = curentPieceClick.data('piece');
+	var firstAction = curentPieceClick.data('action');	
+	
 	if(color === player){
 		staticBoardElement.find('.field').removeClass('active');
 		curentPieceClick.addClass('active');
@@ -109,7 +108,7 @@ function setStartPosition(curentPieceClick,player,staticBoardElement){
 	}
 }
 jQuery(document).ready(function() {
-	var staticBoardElement = jQuery('#chessBoardWrap');//highest static element that not effected by dynamyc data
+	var staticBoardElement = jQuery('#chessBoardWrap');
 	
 	jQuery('#startButton').click(function(){
 		submitFile("php/init.php",jQuery('#chessboardData')[0],true,"chessBoardWrap",staticBoardElement);
@@ -119,13 +118,12 @@ jQuery(document).ready(function() {
 	});
 	
 	jQuery('#chessBoardWrap').on({
-		//HOVER IN
 		mouseenter: function () {
 			var curentPieceHover = jQuery(this); 
-			var color = getColor(curentPieceHover.data('color'));//color of current piece - white/black  /  transorm color name white/black to  number of color 0/1
+			var color = getColor(curentPieceHover.data('color'));
 			allowToSetEndPosition = false;
 			allowToSetStartPosition = false;
-			if(!issetActiveElement(".active")){/*FIRST/Second ACTION*/
+			if(!issetActiveElement(".active")){
 				if(color !== player){
 					curentPieceHover.addClass('lock');
 					allowToSetStartPosition = false;
@@ -144,17 +142,17 @@ jQuery(document).ready(function() {
 				
 			}
 		},
-		//HOVER OUT
+		
 		mouseleave: function () {
 			if(jQuery(this).hasClass('lock')){
 				jQuery(this).removeClass('lock');	
 			}		
 		}
 	},'.field');
-	/*CLICK*/
+	
 	staticBoardElement.on('click', '.field', function(){
 		var currentLink = jQuery(this);
-		var color = getColor(currentLink.data('color'));//for some reason it cant see parent scope :/
+		var color = getColor(currentLink.data('color'));
 
 		if(allowToSetStartPosition === true){
 			startPostitionElementLink = jQuery(this);

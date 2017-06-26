@@ -17,6 +17,7 @@ $player = (int)$_POST['player'];
 $peiceType = $_POST['peiceType'];
 $enemy = $_POST['enemy'];
 $firstAction = (int)$_POST['firstAction'];
+var_dump($_POST['turn']);
 //$piecesList = $GameDB->getPiecesList();
 function validateTurn($peiceType,$startPosition,$endPosition,$enemy,$turn,$player,$gameLogId,$gameInfoId,$firstAction){
 	$rules = new Rules;
@@ -97,7 +98,7 @@ function validateTurn($peiceType,$startPosition,$endPosition,$enemy,$turn,$playe
 		return $notValidated;
 	}
 	if($access === true){
-		$GameDB->updateBoard($startPosition['full'],$endPosition['full'],$peiceType,$player,$gameLogId);
+		$GameDB->updateBoard($startPosition['full'],$endPosition['full'],$peiceType,$player,$gameLogId,$turn,$player);
 		return $validated;
 	}
 }
