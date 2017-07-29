@@ -1,5 +1,6 @@
-DB settings - php/mysql.php 
+DB settings - lib/db.php 
 
-Настройки базы данных - php/mysql.php
+Настройки базы данных - lib/db.php 
+
 
 (bd,name,password,user) 

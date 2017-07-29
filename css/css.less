@@ -2,56 +2,54 @@
 @import "fonts.less";
 @boardWidth:524px;
 @fieldsize:56px;
-body {
-	//background:#000;
-}
 
-/*Chess Pieces*/
-.chess-pieces{
-	width:@fieldsize;
-	height:@fieldsize;
-	display:table;
-	cursor:pointer;
-}
-.field[data-color='white'] .pawn{
+.field[data-info='601'],.field[data-info='600']{
 	background: rgba(0, 0, 0, 0) url("../img/pieces.png") no-repeat scroll -1px -299px;
 }
-.field[data-color='white'] .king{
+.field[data-info='100']{
 	background: rgba(0, 0, 0, 0) url("../img/pieces.png") no-repeat scroll -4px 2px;
 }
-.field[data-color='white'] .queen{
+.field[data-info='200']{
 	background: rgba(0, 0, 0, 0) url("../img/pieces.png") no-repeat scroll -2px -58px;
 }
-.field[data-color='white'] .bishop{
+.field[data-info='300']{
 	background: rgba(0, 0, 0, 0) url("../img/pieces.png") no-repeat scroll -2px -118px;
 }
-.field[data-color='white'] .knight{
+.field[data-info='400']{
 	background: rgba(0, 0, 0, 0) url("../img/pieces.png") no-repeat scroll 0px -179px;
 }
-.field[data-color='white'] .rook{
+.field[data-info='500']{
 	background: rgba(0, 0, 0, 0) url("../img/pieces.png") no-repeat scroll 0px -239px;
 }
-
-.field[data-color='black'] .pawn{
+.field[data-info='611'],.field[data-info='610']{
 	background: rgba(0, 0, 0, 0) url("../img/pieces.png") no-repeat scroll -1px -656px;
 }
-.field[data-color='black'] .king{
+.field[data-info='110']{
 	background: rgba(0, 0, 0, 0) url("../img/pieces.png") no-repeat scroll -4px -355px;
 }
-.field[data-color='black'] .queen{
+.field[data-info='210']{
 	background: rgba(0, 0, 0, 0) url("../img/pieces.png") no-repeat scroll -2px -416px;
 }
-.field[data-color='black'] .bishop{
+.field[data-info='310']{
 	background: rgba(0, 0, 0, 0) url("../img/pieces.png") no-repeat scroll -1px -476px;
 }
-.field[data-color='black'] .knight{
+.field[data-info='410']{
 	background: rgba(0, 0, 0, 0) url("../img/pieces.png") no-repeat scroll 0 -537px;
 }
-.field[data-color='black'] .rook{
+.field[data-info='510']{
 	background: rgba(0, 0, 0, 0) url("../img/pieces.png") no-repeat scroll 0 -597px;
 }
-.lock{
+.field.selected,.field:hover{
+}
+.field:hover{
+	background-color: white;
+}
+.field.selected {
+	background-color: green;
+}
+.field.disabled{
 	cursor: not-allowed!important;
+	background-color:transparent;
 	&>*{
 		cursor: not-allowed!important;
 	}
@@ -64,20 +62,31 @@ button {
 	margin:0 auto;
 	display:block;
 }
-
+#chessStat{
+	display: none;
+	position: absolute;
+	width: 63px;
+	height: 50px;
+	margin-top: 0;
+	margin-left: 230px;
+}
 header{
-display:none;
 	nav{
 		padding-bottom:20px;
+		ul#headerMenu{
+			width:500px;
+			padding-left:324px;
+			li{
+				a{
+					font-size:20px;
+				}
+			}
+		}
 	}
 }
-
 #chessBoardWrap{
 	#chessBoard{
 		background: rgba(0, 0, 0, 0) url("../img/chess_board_bg.jpg") no-repeat scroll 0 0;
-		//height: -moz-max-content;
-		//border:8px solid #000;
-		//width: -moz-max-content;
 		max-width:@boardWidth;
 		padding:38px;
 		overflow:hidden;
@@ -102,6 +111,7 @@ display:none;
 				line-height: @fieldsize;
 				text-align: center;
 				transition-duration: .3s;
+				cursor:pointer;
 				&:hover{
 				 	//	background:green!important;
 					//opacity:0.7;
@@ -117,11 +127,9 @@ display:none;
 			
 		}
 	}
-	
 	#chessboardData{
 		display:none;
 	}
-	
 	#endTheGameWrap{
 		margin: 0 auto;
 		width:280px;

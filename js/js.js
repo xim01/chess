@@ -1,173 +1,235 @@
-function submitFile(formUrl,formDatalink,responseText,respondNodeId,staticBoardElement){
-        var formData = new FormData(formDatalink);
-        var getted = $.ajax({
-                url: formUrl,
-                type: 'POST',
-                data: formData,
-                mimeType: "multipart/form-data",
-                contentType: false,
-                cache: false,
-                processData: false,
-                success: function(data, textSatus, jqXHR){
-						if(responseText === true && respondNodeId){
-							document.getElementById(respondNodeId).innerHTML = getted.responseText;
-							player = Number(jQuery('#chessBoardWrap').find('#player').val());
-							var turn = jQuery('#chessBoardWrap').find("#turn").val();
-							jQuery('#current-player').text(getColor(player,false));
-							jQuery('#current-turn').text(turn);
-							if(issetActiveElement("#access")){
-								if(Number(jQuery("#access").val()) == 0){
-									movePiece(staticBoardElement);
-								}
-							}
-						}	
-                },
-                error: function(jqXHR, textStatus, errorThrown){
-					
-                }
-        });
-}
+﻿var app = app || {};
 
-function getColor(color,number=true){
-	if(number){
-		if(color != 'white' && color != 'black'){
-			color = 2;
-		}
-		if(color == 'white'){
-			color = 0;
-		}
-		if(color == 'black'){
-			color = 1;
-		}
+(function(){
+	'use strict';
 
-	}else{
-		color = Number(color);
-		if(color != 0 && color != 1){
-			color = "";
+	var oldBackboneSync = Backbone.sync;
+	Backbone.sync = function( method, model, options ) {
+		if ( method === 'delete' ) {
+			if ( options.data ) {
+				options.data = JSON.stringify(options.data);
+			}
+			options.contentType = 'application/json';
 		}
-		if(color == 0){
-			color = 'white';
-		}
-		if(color == 1){
-			color = 'black';
-		}
+		return oldBackboneSync.apply(this, [method, model, options]);
 	}
-	return color;
-}
 
-function movePiece(staticBoardElement){
-	var cache;
-	var cacheDataPiece;
-	var cacheDataColor;
-	
-	cache = endPostitionElementLink.children();
-	startPostitionElementLink.children().fadeOut(500,function(){
-		cacheDataPiece = startPostitionElementLink.data('piece');
-		cacheDataColor = startPostitionElementLink.data('color');
-		endPostitionElementLink.attr('data-color',cacheDataColor);
-		endPostitionElementLink.data('color',cacheDataColor);
-		endPostitionElementLink.data('piece',cacheDataPiece);
-		
-		startPostitionElementLink.data('piece','');
-		startPostitionElementLink.data('color','');
-		endPostitionElementLink.html(startPostitionElementLink.children());
-		endPostitionElementLink.children().fadeIn(500);
-		if(enemy == 1){
-			cache = '<div class=" chess-pieces"><p></p></div>';
-		}
-		startPostitionElementLink.html(cache);
-		staticBoardElement.find('.field').removeClass('active');
-		jQuery("#access").val(1);	
-	});
-
-}
-
-function issetActiveElement(findElement){
-	var activeElement = jQuery('#chessBoardWrap').find(findElement)[0];
-	if(typeof activeElement == "undefined"){
-		return false;
-	}else{
-		return true;
-	}
-}
-
-function setStartPosition(curentPieceClick,player,staticBoardElement){
-	var startPosition = curentPieceClick.data('field');
-	var userGIField = jQuery('#selected-field');
-	var color = getColor(curentPieceClick.data('color'));
-	var piece = curentPieceClick.data('piece');
-	var firstAction = curentPieceClick.data('action');	
-	
-	if(color === player){
-		staticBoardElement.find('.field').removeClass('active');
-		curentPieceClick.addClass('active');
-		staticBoardElement.find('#startPosition').val(startPosition);
-		staticBoardElement.find('#peiceType').val(piece);
-		staticBoardElement.find('#firstAction').val(firstAction);
-		userGIField.text(startPosition);
-	}
-}
-jQuery(document).ready(function() {
-	var staticBoardElement = jQuery('#chessBoardWrap');
-	
-	jQuery('#startButton').click(function(){
-		submitFile("php/init.php",jQuery('#chessboardData')[0],true,"chessBoardWrap",staticBoardElement);
-	});
-	staticBoardElement.on('click', '#endTheGame', function(){
-		submitFile("php/end_the_game.php",jQuery('#chessboardData')[0],true,"chessBoardWrap",staticBoardElement);
+	app.ChessLastGameModel = Backbone.Model.extend({
+		url: 'ajax/last_game.php'
 	});
 	
-	jQuery('#chessBoardWrap').on({
-		mouseenter: function () {
-			var curentPieceHover = jQuery(this); 
-			var color = getColor(curentPieceHover.data('color'));
-			allowToSetEndPosition = false;
-			allowToSetStartPosition = false;
-			if(!issetActiveElement(".active")){
-				if(color !== player){
-					curentPieceHover.addClass('lock');
-					allowToSetStartPosition = false;
-				}else{
-					allowToSetStartPosition = true;
-				}
-			}else{
-				if(color == player){
-					allowToSetStartPosition = true;
-					allowToSetEndPosition = false;	
-				}else{
-					allowToSetStartPosition = false;
-					allowToSetEndPosition = true;
-				}
-				
-				
+	app.ChessStat = Backbone.Model.extend({
+		url: 'ajax/game_info.php'
+	});
+	
+	app.ChessLog = Backbone.Model.extend({
+		url: 'ajax/game_log.php',
+		defaults:{turn:0,player:0}
+	});	
+	
+	app.ChessPiecesList = Backbone.Model.extend({
+		url: 'ajax/piece_list.php'
+	});	
+	
+	app.ChessValidateTurn = Backbone.Model.extend({
+		url: 'ajax/validate_turn.php'
+	});
+	
+	app.ChessBoardView = Backbone.View.extend({
+		el:"#chessBoardWrap",
+		template:_.template($("#boardData").html()),
+		events:{
+			'click .field':'actionPiece',
+			'click #endTheGame':'endGame',
+			'mouseover  .field':'showTooltip',
+			'mouseout  .field':'removeTooltip',
+		},
+		initialize:function(){
+			app.chessBoardView_this = this;
+		},
+		showTooltip:function(e){
+			this.setElementInfo(e);
+			if(!this.$(".selected")[0]){
+				if(app.chessLog.get("player") != app.setElementInfoModel.pieceColor)
+					$(e.target).addClass("disabled");
 			}
 		},
-		
-		mouseleave: function () {
-			if(jQuery(this).hasClass('lock')){
-				jQuery(this).removeClass('lock');	
-			}		
-		}
-	},'.field');
-	
-	staticBoardElement.on('click', '.field', function(){
-		var currentLink = jQuery(this);
-		var color = getColor(currentLink.data('color'));
-
-		if(allowToSetStartPosition === true){
-			startPostitionElementLink = jQuery(this);
-			setStartPosition(currentLink,player,staticBoardElement);	
-		}
-		if(allowToSetEndPosition === true){
-			if(color !== player && color != 2){
-				enemy = 1;
-			}else{
-				enemy = 0;
+		removeTooltip:function(e){
+			this.setElementInfo(e);
+			if(app.chessLog.get("player") != app.setElementInfoModel.pieceColor)
+				$(e.target).removeClass("disabled");
+		},
+		endGame:function(){
+			app.chessLog.destroy({data: { id: app.chessLog.get('id') }, processData: true}).done(function(){
+				app.chessStat.destroy({data: { id: app.chessStat.get('id') }, processData: true}).done(function(){
+					app.chessBoardView_this.$el.html("");
+					app.chessBoardView.undelegateEvents();
+					app.chessApp.undelegateEvents();
+					app.chessApp = new app.ChessApp();				
+				});
+			});
+		},
+		setElementInfo:function(e){
+			var dataInfo = String($(e.target).data("info"));
+			var pieceColor = dataInfo[1];
+			var dataField = $(e.target).data("field");
+			var pieceType = dataInfo[0];
+			var pieceColor = dataInfo[1];
+			var pieceAction = dataInfo[2];
+			app.setElementInfoModel = {dataInfo:dataInfo,pieceColor:pieceColor,dataField:dataField,pieceType:pieceType,pieceColor:pieceColor,pieceAction:pieceAction};
+		},
+		actionPiece:function(e){
+			var enemy;
+			this.setElementInfo(e);
+			this.$(".field").removeClass("selected");
+			if(app.chessLog.get("player") == app.setElementInfoModel.pieceColor){
+				$(e.target).addClass("selected");
+				app.start = app.setElementInfoModel.dataField;
+				app.startValue = app.setElementInfoModel.dataInfo;
+				app.pieceType = app.pieceList.get([app.setElementInfoModel.pieceType]);
+				app.pieceAction = app.setElementInfoModel.pieceAction;
+				if(app.pieceAction == 1)
+					app.startValue = ""+app.setElementInfoModel.pieceType+""+app.setElementInfoModel.pieceColor+"0";
 			}
-			staticBoardElement.find("#enemy").val(enemy);
-			endPostitionElementLink = jQuery(this);
-			staticBoardElement.find('#endPosition').val(currentLink.data('field'));
-			submitFile("php/validate_turn.php",jQuery('#chessboardData')[0],true,"chessboardData",staticBoardElement);
-		}	
+			if(app.start != undefined && app.setElementInfoModel.pieceColor != app.chessLog.get("player")){
+				if(app.setElementInfoModel.pieceColor == undefined)
+					enemy = 0;
+				else
+					enemy = 1;
+				app.end = app.setElementInfoModel.dataField;
+				app.endValue = app.setElementInfoModel.dataInfo;
+				var actionPieceModel = {
+					startPosition:app.start,
+					endPosition:app.end,
+					peiceType:app.pieceType,
+					enemy:enemy,
+					turn:app.chessLog.get("turn"),
+					player:app.chessLog.get("player"),
+					game_log_id:app.chessLog.get("id"),
+					game_info_id:app.chessLog.get("game_info_id"),
+					firstAction:app.pieceAction
+				}
+				var chessValidateTurn = new app.ChessValidateTurn(actionPieceModel);
+				chessValidateTurn.save().done(function(){
+					if(Number(chessValidateTurn.get("validated"))){
+						if(enemy){
+							delete app.endValue;
+							if(app.pieceList.get([app.setElementInfoModel.pieceType]) == "king"){
+								alert(app.chessBoardView_this.showPlayerColor(app.chessLog.get("player"))+" player win the game!");
+								app.chessBoardView_this.endGame();
+							}	
+						}
+						app.chessStat.set(app.start,app.endValue);
+						app.chessStat.set(app.end,app.startValue);
+						app.chessStat.set('updateGameInfo',true);
+						app.chessStat.save();
+						app.chessLog.set('turn',app.chessBoardView_this.setNextTurn(app.chessLog.get('turn'),app.chessLog.get('player')));
+						app.chessLog.set('player',app.chessBoardView_this.setPlayerColor(app.chessLog.get('player')));
+						app.chessLog.save();
+						app.chessBoardView_this.render();
+					}
+					delete app.setElementInfoModel;
+					delete app.start;
+				});
+			}
+		},
+		showPlayerColor:function(player){
+			return (Number(player) == 0) ? "white" : "black";
+		},
+		setPlayerColor:function(player){
+			return (Number(player)) ? 0 : 1;
+		},
+		setNextTurn:function(turn,player){
+			turn = Number(turn);
+			return (Number(player) == 1) ? turn+1 : turn;
+		},
+		render:function(){
+			this.$el.html(this.template(app.chessStat.toJSON()));
+		}
 	});
-});
+	
+	app.ChessApp = Backbone.View.extend({
+		el:"#startBtnWrap",
+		events:{
+			'click #startButton':'startNewGame',
+			'click #resumeButton':'resumeGame',
+		},
+		initialize:function(){
+			app.chessApp_this = this;
+			app.pieceList = new app.ChessPiecesList();
+			app.chessStat = new app.ChessStat();
+			app.chessLog = new app.ChessLog();
+			app.lastGameModel = new app.ChessLastGameModel();
+			app.chessLogView = new app.ChessLogView();
+			app.chessBoardView = new app.ChessBoardView();
+			app.pieceList.fetch();
+			this.render();
+		},
+		startNewGame:function(){ 
+			app.chessStat.save({createGameInfo:true}).done(function(){
+				app.chessLog.save({createChessLog:app.chessStat.get('id')}).done(function(){
+					app.chessApp_this.loadBoardViews();
+				});	
+			});
+		},
+		resumeGame:function(){
+			app.chessStat.save({getGameInfoById:app.lastGameModel.get("game_info_id")}).done(function(){	
+				app.chessLog.save({getChessLogById:app.lastGameModel.get("id")}).done(function(){
+					app.chessApp_this.loadBoardViews();
+				});
+			});
+		},
+		loadBoardViews:function(){
+			app.chessBoardView.render();
+			app.chessApp_this.$el.html("");
+			app.chessLogView.render().el;
+		},
+		render:function(){
+			var chessAppStartBtnText;
+			var chessAppStartBtnId;
+			var chessAppStartBtnTemplate = _.template("<p id='startButtonWrap' class='col-xs-12'><button id='<%=chessAppStartBtnId%>'><%=chessAppStartBtnText%></button></p>");
+
+			app.lastGameModel.fetch().done(function(){
+				chessAppStartBtnId = (app.lastGameModel.get("error")) ? "startButton" : "resumeButton";
+				chessAppStartBtnText = (app.lastGameModel.get("error")) ? "Start New" : "Countinue";
+				app.chessApp_this.$el.html(chessAppStartBtnTemplate({chessAppStartBtnId:chessAppStartBtnId,chessAppStartBtnText:chessAppStartBtnText}));
+				return app.chessApp_this;
+			});
+		}
+	});
+
+	app.ChessLogView = Backbone.View.extend({
+		el:"#chessStat",
+		initialize:function(){
+			this.listenTo(app.chessLog, 'change', this.render);
+			this.listenTo(app.chessLog, 'destroy', this.destroy);
+		},
+		template: _.template($("#chessStatTemplate").html()),
+		render:function(){
+			this.$el.html(this.template(app.chessLog.toJSON()));
+			return this;
+		},
+		destroy:function(){
+			this.$el.html(this.template({turn:0,player:0}));
+			return this;
+		}
+
+	});
+	
+	app.ChessRouter = Backbone.Router.extend({
+		routes: {
+			"":"hideChessStat",
+			"game-log":"showChessStat",
+		},
+		showChessStat:function(){
+			$("#chessStat").css("display","block");
+		},
+		hideChessStat:function(){
+			$("#chessStat").css("display","none");
+		}
+	});
+	/*******************************************************************/
+	new app.ChessRouter();
+	app.chessApp = new app.ChessApp();
+	Backbone.history.start();
+})();

@@ -1,5 +1,5 @@
-﻿<?php
-include_once('mysql.php');
+<?php
+include_once('db.php');
 
 class Rules{
 	public $hor = array('a','b','c','d','e','f','g','h',);
@@ -26,7 +26,7 @@ class Rules{
 	
 	public function pawnRules($startPosition,$endPosition,$firstAction,$player){
 		if($startPosition['hor'] == $endPosition['hor']){
-			if($player === 0){
+			if($player == 0){
 				if($firstAction == 1 and ($endPosition['vert'] == $startPosition['vert']+1 or $endPosition['vert'] == $startPosition['vert']+2))
 					return true;				
 				else
